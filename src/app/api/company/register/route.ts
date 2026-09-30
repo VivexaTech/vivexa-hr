@@ -62,6 +62,10 @@ export async function POST(request: Request) {
       userId = authUser.id;
     }
 
+    if (!userId) {
+      return NextResponse.json({ error: "Unable to create the account." }, { status: 400 });
+    }
+
     const { error: updateError } = await admin.auth.admin.updateUserById(userId, {
       password: parsed.data.password,
       email_confirm: true,

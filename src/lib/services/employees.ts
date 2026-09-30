@@ -97,7 +97,7 @@ export async function saveEmployeeRecord(
       resetPassword: Boolean(input.resetPassword && saved.user_id),
     });
     if (result.error) return { error: result.error, status: result.status, employeeId: saved.id };
-    accountCreated = result.created;
+    accountCreated = result.created === true;
   }
 
   await writeAudit({
@@ -169,6 +169,9 @@ async function provisionEmployeeAccount(
           return { error: "That login is already linked to another employee.", status: 409 as const };
         }
         userId = profile.id;
+        if (!userId) {
+          return { error: "Unable to create the employee login.", status: 400 as const };
+        }
         await admin.auth.admin.updateUserById(userId, {
           password: input.password,
           email_confirm: true,
